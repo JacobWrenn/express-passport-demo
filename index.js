@@ -99,6 +99,7 @@ app.post('/register', async (req, res, next) => {
           email: req.body.email,
           password: hash
         }).save()
+        req.flash('error', 'Account made, please log in.');
         res.redirect('/login');
       });
     });
