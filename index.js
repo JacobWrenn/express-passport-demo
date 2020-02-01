@@ -3,15 +3,16 @@ const app = express()
 const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
+const bcrypt = require('bcrypt')
 
 LocalStrategy = require('passport-local').Strategy;
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
   done(null, user._id);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err, user) {
     done(err, user);
   });
 });
@@ -19,15 +20,18 @@ passport.deserializeUser(function(id, done) {
 passport.use(new LocalStrategy(
   function (username, password, done) {
     User.findOne({
-      email: username,
-      password: password
+      email: username
     }, (err, user) => {
       if (err) return done(err)
-      if (user) {
-        return done(null, user);
-      } else {
-        return done(null, false, { message: 'Username or password was wrong.' });
-      }
+      if (!user) return done(null, false, { message: 'User not found.' });
+      bcrypt.compare(password, user.password, function(err, res) {
+        if (err) return done(err)
+        if (res) {
+          return done(null, user);
+        } else {
+          return done(null, false, { message: 'Wrong password.' });
+        }
+      })
     })
   }
 ));
@@ -80,18 +84,24 @@ const User = mongoose.model('users', userSchema);
 
 app.post('/register', async (req, res, next) => {
   const user = await User.findOne({
-    email: req.body.email,
-    password: req.body.password
+    email: req.body.email
   })
 
   if (user) {
-    res.redirect('/login');
+    req.flash('error', 'Sorry, that name is taken. Maybe you need to <a href="/login">login</a>?');
+    res.redirect('/register');
   } else {
-    new User({
-      email: req.body.email,
-      password: req.body.password
-    }).save()
-    res.redirect('/login');
+    bcrypt.genSalt(10, function (err, salt) {
+      if (err) return next(err);
+      bcrypt.hash(req.body.password, salt, function (err, hash) {
+        if (err) return next(err);
+        new User({
+          email: req.body.email,
+          password: hash
+        }).save()
+        res.redirect('/login');
+      });
+    });
   }
 });
 

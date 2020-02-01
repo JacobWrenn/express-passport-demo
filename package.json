@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "bcrypt": "^3.0.7",
     "connect-mongodb-session": "^2.3.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
