@@ -36,6 +36,7 @@ function loggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     next()
   } else {
+    req.flash('error', 'You needed to be logged in to visit that page!');
     res.redirect('/login')
   }
 }
