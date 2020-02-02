@@ -23,13 +23,13 @@ passport.use(new LocalStrategy(
       email: username
     }, (err, user) => {
       if (err) return done(err)
-      if (!user) return done(null, false, { message: 'User not found.' });
+      if (!user) return done(null, false, { message: 'User not found!' });
       bcrypt.compare(password, user.password, function(err, res) {
         if (err) return done(err)
         if (res) {
           return done(null, user);
         } else {
-          return done(null, false, { message: 'Wrong password.' });
+          return done(null, false, { message: 'Incorrect password!' });
         }
       })
     })
@@ -47,7 +47,7 @@ function loggedIn(req, res, next) {
 
 var MongoDBStore = require('connect-mongodb-session')(session);
 
-const mongoString = 'mongodb://localhost/nyg'
+const mongoString = 'mongodb://localhost/express-passport-demo'
 
 var store = new MongoDBStore({
   uri: mongoString,
@@ -60,7 +60,7 @@ app.set('view-engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
 app.use(flash())
 app.use(session({
-  secret: 'This is a secret',
+  secret: 'This is a secret - Make sure to change!',
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
   },
@@ -90,6 +90,9 @@ app.post('/register', async (req, res, next) => {
   if (user) {
     req.flash('error', 'Sorry, that name is taken. Maybe you need to <a href="/login">login</a>?');
     res.redirect('/register');
+  } else if (req.body.email == "" || req.body.password == "") {
+    req.flash('error', 'Please fill out all the fields.');
+    res.redirect('/register');
   } else {
     bcrypt.genSalt(10, function (err, salt) {
       if (err) return next(err);
@@ -99,7 +102,7 @@ app.post('/register', async (req, res, next) => {
           email: req.body.email,
           password: hash
         }).save()
-        req.flash('error', 'Account made, please log in.');
+        req.flash('info', 'Account made, please log in...');
         res.redirect('/login');
       });
     });

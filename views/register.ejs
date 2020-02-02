@@ -1,11 +1,15 @@
-<h1>Registration</h1>
+<title>Register</title>
+<link rel="stylesheet" href="/main.css">
+<h1>Register</h1>
 
 <form action="/register" method="post">
-  <input type="text" name="email" placeholder="Email...">
+  <input type="email" name="email" placeholder="Email...">
   <input type="password" name="password" placeholder="Password...">
   <input type="submit" value="Register">
 </form>
 
 <% if (messages.error) { %>
-  <p><%- messages.error -%></p>
+  <p class="error"><%- messages.error -%></p>
 <% } %>
+
+<button class="button"><a href="/login">Or login...</a></button>
