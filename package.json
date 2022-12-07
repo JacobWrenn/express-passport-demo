@@ -5,12 +5,12 @@
   "main": "index.js",
   "dependencies": {
     "bcrypt": "^5.0.0",
-    "connect-mongodb-session": "^2.3.0",
+    "connect-mongodb-session": "^3.1.1",
     "ejs": "^3.0.1",
     "express": "^4.18.2",
     "express-flash": "0.0.2",
     "express-session": "^1.17.0",
-    "mongoose": "^5.8.11",
+    "mongoose": "^5.13.15",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0"
   },
